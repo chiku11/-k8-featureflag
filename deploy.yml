@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp
+  namespace: example
+  labels: 
+    app: myapp
+spec:
+  selector:
+    matchLabels:
+      app: myapp
+  template:
+    metadata:
+      labels:
+        app: myapp
+        feature_flag_enabled: "off"
+    spec:
+      containers:
+      - name: myapp
+        image: featureflag:1.0
+        env:
+        - name: MY_FLAG
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.labels['feature_flag_enabled']
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 8000
+        volumeMounts:
+          - name: featureflag
+            mountPath: /etc/featureflag
+      volumes:
+        - name: featureflag
+          downwardAPI:
+            items:
+              - path: "labels"
+                fieldRef:
+                  fieldPath: metadata.labels
+              - path: "annotations"
+                fieldRef:
+                  fieldPath: metadata.annotations
+        
+
+        

@@ -1,0 +1,5 @@
+docker build . -t featureflag:1.0 
+
+k apply -f deploy.yml
+k apply -f svc.yml
+ 
